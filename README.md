@@ -11,11 +11,6 @@ This project is designed using figma and developed using react
 
 ### The modern-figma-robots-react-app folder contains the build file 
 - you can delete it and
-### run 
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
 ### `npm run build`
 
