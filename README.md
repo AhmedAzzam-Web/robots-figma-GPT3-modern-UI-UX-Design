@@ -10,7 +10,7 @@ This project is designed using figma and developed using react
 - https://robots-figma.netlify.app/
 
 ### The modern-figma-robots-react-app folder contains the build file 
-- you can delete it and
+- you can delete it and type in terminal
 
 ### `npm run build`
 
