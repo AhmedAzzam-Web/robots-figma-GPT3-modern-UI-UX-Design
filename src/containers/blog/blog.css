@@ -1,0 +1,93 @@
+.gpt3__blog {
+  display: flex;
+  flex-direction: column;
+  margin-top: 6rem;
+}
+.gpt3__blog-heading {
+  margin-bottom: 5rem;
+  font-weight: 800;
+  font-size: 3.4rem;
+  line-height: 80px;
+  letter-spacing: -0.04em;
+}
+.gpt3__blog-container {
+  display: flex;
+  align-items: center;
+}
+.gpt3__blog-container_groupA {
+  flex: 0.75;
+  margin-right: 2rem;
+  display: grid;
+}
+.gpt3__blog-container_groupB {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  grid-gap: 2rem;
+}
+.gpt3__blog-container_groupB .gpt3__blog-container_article-content {
+  padding-top: 0;
+}
+.gpt3__blog-container_groupB .gpt3__blog-container_article-content p {
+  margin-top: 1rem;
+}
+@media (min-width: 1550px) {
+  .gpt3__blog-container_groupB .gpt3__blog-container_article-content p {
+    margin-top: 1.65rem;
+  }
+}
+@media (min-width: 1435px) and (max-width: 1550px) {
+  .gpt3__blog-container_groupB .gpt3__blog-container_article-content p {
+    margin-top: 2rem;
+  }
+}
+@media (max-width: 1115px) {
+  .gpt3__blog-container {
+    flex-direction: column-reverse;
+  }
+  .gpt3__blog-container_groupA {
+    margin: 2rem 0;
+  }
+  .gpt3__blog-container_groupA .gpt3__blog-container_article {
+    width: 48%;
+  }
+  .gpt3__blog-container_groupA
+    .gpt3__blog-container_article:last-child
+    p:last-child {
+    margin-top: 1rem;
+  }
+}
+@media (max-width: 700px) {
+  .gpt3__blog-container_groupB {
+    grid-template-columns: repeat(1, 1fr);
+  }
+  .gpt3__blog-container_groupA .gpt3__blog-container_article {
+    width: 100%;
+  }
+  .gpt3__blog-heading {
+    font-size: 2.1rem;
+    line-height: 42px;
+    margin-bottom: 3rem;
+  }
+}
+@media screen and (max-width: 650px) {
+  .gpt3__blog-heading {
+    font-size: 2.1rem;
+    line-height: 42px;
+  }
+}
+@media screen and (max-width: 410px) {
+  .gpt3__blog-heading {
+    font-size: 1.8rem;
+    line-height: 42px;
+    margin-bottom: 2rem;
+  }
+}
+@media screen and (max-width: 360px) {
+  .gpt3__blog-heading {
+    font-size: 1.4rem;
+    line-height: 30px;
+    margin-bottom: 1.5rem;
+  }
+}

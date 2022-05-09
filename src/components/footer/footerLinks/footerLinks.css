@@ -1,0 +1,15 @@
+.gpt3__footer-ul-header {
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 16px;
+  color: #ffffff;
+  margin-bottom: 1.5rem;
+}
+.gpt3__footer-ul-link {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 14px;
+  margin-bottom: 1.2rem;
+  color: #ffffff;
+  cursor: pointer;
+}

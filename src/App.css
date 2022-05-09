@@ -1,0 +1,143 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  scroll-behavior: smooth;
+  font-family: var(--font-family);
+}
+body {
+  background-color: var(--color-bg);
+}
+a {
+  text-decoration: none;
+}
+h2 {
+  font-weight: 800;
+  font-size: 34px;
+  line-height: 45px;
+  letter-spacing: -0.04em;
+}
+h4 {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 30px;
+}
+p {
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 30px;
+}
+@media (max-width: 650px) {
+  p {
+    font-size: 16px;
+    line-height: 1.7;
+  }
+}
+@media (max-width: 550px) {
+  h2 {
+    font-size: 30px;
+    line-height: 36px;
+    letter-spacing: 0;
+  }
+  p {
+    font-size: 13px;
+    line-height: 1.6;
+  }
+}
+.gradient__bg {
+  background: -moz-radial-gradient(
+    circle at 3% 25%,
+    rgba(0, 40, 83, 1) 0%,
+    rgba(4, 12, 24, 1) 100%
+  );
+  background: -webkit-radial-gradient(
+    circle at 3% 25%,
+    rgba(0, 40, 83, 1) 0%,
+    rgba(4, 12, 24, 1) 100%
+  );
+  background: -o-radial-gradient(
+    circle at 3% 25%,
+    rgba(0, 40, 83, 1) 0%,
+    rgba(4, 12, 24, 1) 100%
+  );
+  background: -ms-radial-gradient(
+    circle at 3% 25%,
+    rgba(0, 40, 83, 1) 0%,
+    rgba(4, 12, 24, 1) 100%
+  );
+  background: radial-gradient(
+    circle at 3% 25%,
+    rgba(0, 40, 83, 1) 0%,
+    rgba(4, 12, 24, 1) 100%
+  );
+}
+
+.gradient__text {
+  background: var(--gradient-text);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  -moz-text-fill-color: transparent;
+}
+
+.section__padding {
+  padding: 2rem 5rem;
+}
+.section__margin {
+  margin: 3rem 5rem;
+}
+@media (min-width: 1115px) {
+  .section__padding {
+    padding: 3rem 5rem;
+  }
+  .section__margin {
+    margin: 3rem 5rem;
+  }
+}
+@media screen and (max-width: 1050px) {
+  .section__padding {
+    padding: 2rem 4rem;
+  }
+  .section__margin {
+    margin: 2rem 4rem;
+  }
+}
+@media (max-width: 890px) {
+  .section__margin {
+    margin: 2rem 4rem;
+  }
+}
+@media screen and (max-width: 700px) {
+  .section__padding {
+    padding: 2rem;
+  }
+  .section__margin {
+    margin: 2rem;
+  }
+}
+@media (max-width: 490px) {
+  .section__margin {
+    margin: 2rem 1rem;
+  }
+}
+@media screen and (max-width: 300px) {
+  .section__padding {
+    padding: 1rem;
+  }
+}
+ul {
+  list-style: none;
+}
+
+.scale-up-center {
+  animation: scale-up-center 0.4s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+}
+@keyframes scale-up-center {
+  0% {
+    transform: scale(0.5);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

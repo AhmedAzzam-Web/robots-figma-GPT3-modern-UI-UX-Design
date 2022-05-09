@@ -1,0 +1,97 @@
+.gpt3__features {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.gpt3__features-heading {
+  flex: 1;
+  margin-right: 2rem;
+}
+.gpt3__features-heading h3 {
+  min-width: 290px;
+  margin-right: 3rem;
+}
+.gpt3__features-heading h4 {
+  color: #ff8a71;
+  margin-top: 2rem;
+}
+.gpt3__features-container {
+  max-width: 542px;
+}
+.gpt3__features-container .gpt3__features-container_feature {
+  flex-direction: row;
+  width: 100%;
+}
+.gpt3__features-container .gpt3__features-container_feature:not(:first-child) {
+  margin-top: 2rem;
+}
+.gpt3__features-container .gpt3__features-container_feature h3 {
+  font-weight: 800;
+  font-size: 18px;
+  line-height: 24px;
+  letter-spacing: -0.04em;
+  color: #ffffff;
+  margin-right: 1.3rem;
+}
+.gpt3__features-container .gpt3__features-container_feature-text p {
+  margin-top: 0;
+}
+@media (min-width: 1230px) {
+  .gpt3__features-container {
+    max-width: 700px;
+  }
+  .gpt3__features-container .gpt3__features-container_feature{
+    padding-right: 1.5rem;
+  }
+}
+@media (max-width: 1150px) {
+  .gpt3__features-heading h3 {
+    margin-right: 0;
+  }
+  .gpt3__features-heading h4 {
+    margin: 1rem 0 3rem;
+  }
+  .gpt3__features-container .gpt3__features-container_feature {
+    margin: 0;
+  }
+}
+@media (max-width: 1025px) {
+  .gpt3__features-container {
+    max-width: -webkit-fill-available;
+  }
+}
+@media (max-width: 600px) {
+  .gpt3__features-container .gpt3__features-container_feature h3 {
+    margin-right: 0;
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: 1px;
+  }
+}
+@media (max-width: 513px) {
+  .gpt3__features-heading h3 {
+    font-size: 18px;
+    line-height: 30px;
+  }
+  .gpt3__features-container .gpt3__features-container_feature h3 {
+    font-size: 16px;
+    min-width: 280px;
+  }
+  .gpt3__features-container .gpt3__features-container_feature {
+    flex-direction: column;
+  }
+  .gpt3__features-container .gpt3__features-container_feature-text p {
+    margin-top: 0.7rem;
+  }
+}
+@media (max-width: 315px) {
+  .gpt3__features-heading h3 {
+    min-width: 226px;
+    font-size: 15px;
+  }
+  .gpt3__features-container .gpt3__features-container_feature h3 {
+    min-width: 200px;
+  }
+}
