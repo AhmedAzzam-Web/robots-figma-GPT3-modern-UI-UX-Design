@@ -21,14 +21,24 @@ const Footer = () => {
         <div className="gpt3__footer-links_container">
           <FooterLinks
             title="Links"
-            links={["Overons", "Social Media", "Counters", "Contacts"]}
+            links={[
+              { Home: "home" },
+              { "What is GPT": "whatGPT3" },
+              { "Open AI": "possibility" },
+              { "Case Studies": "features" },
+              { Library: "blog" },
+            ]}
           />
         </div>
 
         <div className="gpt3__footer-links_container">
           <FooterLinks
             title="Company"
-            links={["Terms & Conditions", "Privacy Policy", "Contact"]}
+            links={[
+              { "Terms & Conditions": "" },
+              { "Privacy Policy": "" },
+              { Contact: "" },
+            ]}
           />
         </div>
 
@@ -36,9 +46,9 @@ const Footer = () => {
           <FooterLinks
             title="Get in touch"
             links={[
-              "Crechterwoord K12 182 DK Alknjkcb",
-              "085-132567",
-              "info@payme.net",
+              { "Crechterwoord K12 182 DK Alknjkcb": "" },
+              { "085-132567": "" },
+              { "info@payme.net": "" },
             ]}
           />
         </div>
