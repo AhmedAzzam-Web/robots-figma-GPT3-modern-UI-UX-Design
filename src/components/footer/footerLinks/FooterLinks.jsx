@@ -8,7 +8,9 @@ const FooterLinks = ({ title, links }) => {
 
       <ul>
         {links.map((link, index) => (
-          <li className="gpt3__footer-ul-link" key={index}>{link}</li>
+          <li className="gpt3__footer-ul-link" key={index}>
+            <a href={`#${Object.values(link)}`}>{Object.keys(link)}</a>
+          </li>
         ))}
       </ul>
     </>
