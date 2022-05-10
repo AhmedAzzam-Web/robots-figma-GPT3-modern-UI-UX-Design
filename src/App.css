@@ -70,67 +70,14 @@ p {
     rgb(1 37 74) 0%,
     rgba(4, 12, 24, 1) 100%
   );
-<<<<<<< HEAD
   background-size: 400% 400%;
-}
-=======
   background: radial-gradient(
     circle at 3% 25%,
     rgb(1 37 74) 0%,
     rgba(4, 12, 24, 1) 100%
   );
-  background-size: 400% 400%;
->>>>>>> refs/remotes/origin/master
+}
 
-  -webkit-animation: AnimationName 30s ease infinite;
-  -moz-animation: AnimationName 30s ease infinite;
-  -o-animation: AnimationName 30s ease infinite;
-  animation: AnimationName 30s ease infinite;
-}
-@-webkit-keyframes AnimationName {
-  0% {
-    background-position: 45% 0%;
-  }
-  50% {
-    background-position: 56% 100%;
-  }
-  100% {
-    background-position: 45% 0%;
-  }
-}
-@-moz-keyframes AnimationName {
-  0% {
-    background-position: 45% 0%;
-  }
-  50% {
-    background-position: 56% 100%;
-  }
-  100% {
-    background-position: 45% 0%;
-  }
-}
-@-o-keyframes AnimationName {
-  0% {
-    background-position: 45% 0%;
-  }
-  50% {
-    background-position: 56% 100%;
-  }
-  100% {
-    background-position: 45% 0%;
-  }
-}
-@keyframes AnimationName {
-  0% {
-    background-position: 45% 0%;
-  }
-  50% {
-    background-position: 56% 100%;
-  }
-  100% {
-    background-position: 45% 0%;
-  }
-}
 .gradient__text {
   background: var(--gradient-text);
   background-clip: text;
