@@ -1,9 +1,22 @@
-import React from "react";
-import people from "../../assets/people.png";
+import React, { useEffect } from "react";
+import people from "../../assets/people.webp";
 import ai from "../../assets/ai.webp";
 import "./header.css";
 
 const Header = () => {
+  useEffect(() => {
+    let button = document.getElementById("header-content_start-button");
+
+    button.addEventListener("mousemove", (e) => {
+      let x = e.offsetX;
+      let y = e.offsetY;
+      button.style.setProperty("--mouse-x", x + "px");
+      button.style.setProperty("--mouse-y", y + "px");
+    });
+
+    return () => {};
+  }, []);
+
   return (
     <div className="section__padding gpt3__header" id="home">
       <div className="gpt3__header-content">
@@ -20,7 +33,9 @@ const Header = () => {
 
         <div className="gpt3__header-content__input">
           <input type="email" placeholder="Your Email Address" />
-          <button type="button">get started</button>
+          <button type="button" id="header-content_start-button">
+            get started
+          </button>
         </div>
 
         <div className="gpt3__header-content__people">

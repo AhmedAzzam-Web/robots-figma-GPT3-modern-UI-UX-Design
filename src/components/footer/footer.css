@@ -93,6 +93,7 @@
 }
 .gpt3__footer-copyright .social-icon {
   font-size: 25px;
+  transition: 0.2s;
 }
 .gpt3__footer-copyright .social-icon:hover {
   color: rgb(0, 159, 252);

@@ -10,6 +10,16 @@ body {
 }
 a {
   text-decoration: none;
+  transition: color 0.3s;
+}
+a:hover {
+  color: rgb(0 252 240);
+  background: rgb(0 252 240);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  -moz-text-fill-color: transparent;
 }
 h2 {
   font-weight: 800;
@@ -82,14 +92,6 @@ p {
 
 .gradient__text {
   background: var(--gradient-text);
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  -webkit-background-clip: text;
-  -moz-background-clip: text;
-  -moz-text-fill-color: transparent;
-}
-a:hover {
-  background: rgb(0 252 240);
   background-clip: text;
   -webkit-text-fill-color: transparent;
   -webkit-background-clip: text;

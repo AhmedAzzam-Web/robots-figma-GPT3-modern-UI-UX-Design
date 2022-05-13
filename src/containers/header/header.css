@@ -57,6 +57,28 @@
   line-height: 27px;
   cursor: pointer;
   text-transform: capitalize;
+  position: relative;
+  transition: background-color 0.3s ease;
+  overflow: hidden;
+}
+.gpt3__header-content__input button::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  top: 50%;
+  left: 50%;
+  top: var(--mouse-y);
+  left: var(--mouse-x);
+  transform-style: flat;
+  transform: translate3d(-50%, -50%, 0);
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 100%;
+  transition: width 0.3s ease, height 0.3s ease;
+}
+.gpt3__header-content__input button:active::after {
+  width: 300px;
+  height: 300px;
 }
 .gpt3__header-content__people {
   display: flex;

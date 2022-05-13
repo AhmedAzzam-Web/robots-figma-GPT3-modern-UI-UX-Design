@@ -50,6 +50,30 @@
   font-weight: 500;
   font-size: 18px;
   line-height: 25px;
+  position: relative;
+  transition: background-color 0.3s ease;
+  overflow: hidden;
+}
+.gpt3__navbar-sign button::after,
+.gpt3__navbar-menu_container button::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  top: 50%;
+  left: 50%;
+  top: var(--sign-y);
+  left: var(--sign-x);
+  transform-style: flat;
+  transform: translate3d(-50%, -50%, 0);
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 100%;
+  transition: width 0.3s ease, height 0.3s ease;
+}
+.gpt3__navbar-sign button:active::after,
+.gpt3__navbar-menu_container button:active::after {
+  width: 300px;
+  height: 300px;
 }
 .gpt3__navbar-menu {
   color: #fff;
