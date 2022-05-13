@@ -46,37 +46,37 @@ p {
 }
 .gradient__bg {
   background: -moz-radial-gradient(
-    circle at 3% 25%,
-    rgba(0, 40, 83, 1) 0%,
-    rgba(4, 12, 24, 1) 100%
+    circle at 3% 15%,
+    rgb(1 48 98) 0%,
+    rgb(5 17 34) 93%
   );
 
   /* safari 5.1+,chrome 10+ */
   background: -webkit-radial-gradient(
-    circle at 3% 25%,
-    rgba(0, 40, 83, 1) 0%,
-    rgba(4, 12, 24, 1) 100%
+    circle at 3% 15%,
+    rgb(1 48 98) 0%,
+    rgb(5 17 34) 93%
   );
 
   /* opera 11.10+ */
   background: -o-radial-gradient(
-    circle at 3% 25%,
-    rgba(0, 40, 83, 1) 0%,
-    rgba(4, 12, 24, 1) 100%
+    circle at 3% 15%,
+    rgb(1 48 98) 0%,
+    rgb(5 17 34) 93%
   );
 
   /* ie 10+ */
   background: -ms-radial-gradient(
-    circle at 3% 25%,
-    rgba(0, 40, 83, 1) 0%,
-    rgba(4, 12, 24, 1) 100%
+    circle at 3% 15%,
+    rgb(1 48 98) 0%,
+    rgb(5 17 34) 93%
   );
 
   /* global 92%+ browsers support */
   background: radial-gradient(
-    circle at 3% 25%,
-    rgba(0, 40, 83, 1) 0%,
-    rgba(4, 12, 24, 1) 100%
+    circle at 3% 15%,
+    rgb(1 48 98) 0%,
+    rgb(5 17 34) 93%
   );
 }
 
@@ -88,7 +88,14 @@ p {
   -moz-background-clip: text;
   -moz-text-fill-color: transparent;
 }
-
+a:hover {
+  background: rgb(0 252 240);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  -moz-text-fill-color: transparent;
+}
 .section__padding {
   padding: 2rem 5rem;
 }

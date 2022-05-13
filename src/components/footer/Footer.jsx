@@ -2,6 +2,8 @@ import React from "react";
 import "./footer.css";
 import gpt3Logo from "../../assets/logo.svg";
 import FooterLinks from "./footerLinks/FooterLinks";
+import { AiFillLinkedin } from "react-icons/ai";
+import { AiFillGithub } from "react-icons/ai";
 
 const Footer = () => {
   return (
@@ -10,7 +12,7 @@ const Footer = () => {
         Do you want to step in to the future before others
       </h2>
 
-      <button className="gpt3__footer-btn">Request Early Access</button>
+      <button className="gpt3__footer-btn" type='button'>Request Early Access</button>
 
       <div className="gpt3__footer-links">
         <div className="gpt3__footer-links_logo">
@@ -55,7 +57,22 @@ const Footer = () => {
       </div>
 
       <div className="gpt3__footer-copyright">
-        <p>© 2021 GPT-3 Ahmed Azzam Developer. All rights reserved.</p>
+        <div>
+          <p>
+            © 2022 GPT-3 developed by
+            <a href="www.linkedin.com/in/ahmed-azzam-dev">Ahmed Azzam</a>
+          </p>
+        </div>
+
+        <div className="profile-icons">
+          <a href="https://www.linkedin.com/in/ahmed-azzam-dev" target='_blank' rel="noopener noreferrer">
+            <AiFillLinkedin className="social-icon" />
+          </a>
+
+          <a href="https://github.com/AhmedAzzam-Web" target='_blank' rel="noopener noreferrer">
+            <AiFillGithub className="social-icon" />
+          </a>
+        </div>
       </div>
     </div>
   );

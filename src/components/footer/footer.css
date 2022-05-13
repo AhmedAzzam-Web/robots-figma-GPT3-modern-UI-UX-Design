@@ -26,6 +26,23 @@
   font-weight: 400;
   font-size: 18px;
   line-height: 21px;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+.gpt3__footer-btn::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(103.22deg, #ae67fa -13.86%, #f49867 99.55%);
+  transition: all 0.5s;
+  z-index: -1;
+}
+.gpt3__footer-btn:hover::before {
+  width: 100%;
 }
 .gpt3__footer-links {
   display: flex;
@@ -54,9 +71,11 @@
   margin: 1rem;
 }
 .gpt3__footer-copyright {
-  margin-top: 2rem;
-  text-align: center;
+  margin-top: 2.3rem;
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .gpt3__footer-copyright p {
   font-weight: 400;
@@ -64,6 +83,22 @@
   line-height: 14px;
   font-feature-settings: "liga" off;
   color: #ffffff;
+}
+.gpt3__footer-copyright a {
+  color: #ffffff;
+  margin-left: 3px;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 14px;
+}
+.gpt3__footer-copyright .social-icon {
+  font-size: 25px;
+}
+.gpt3__footer-copyright .social-icon:hover {
+  color: rgb(0, 159, 252);
+}
+.gpt3__footer-copyright .social-icon:first-child {
+  margin: 0 5px;
 }
 @media (max-width: 768px) {
   .gpt3__footer h2 {
@@ -100,5 +135,13 @@
   .gpt3__footer-copyright p {
     font-size: 12px;
     line-height: 16px;
+  }
+}
+@media (max-width: 430px) {
+  .gpt3__footer-copyright {
+    flex-direction: column;
+  }
+  .gpt3__footer-copyright .profile-icons {
+    margin-top: 1rem;
   }
 }
