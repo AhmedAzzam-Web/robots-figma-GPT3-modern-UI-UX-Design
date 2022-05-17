@@ -88,8 +88,9 @@
   margin-top: 2rem;
 }
 .gpt3__header-content__people img {
-  height: 38px;
   width: 181.79px;
+  height: 38px;
+  object-fit: contain;
 }
 .gpt3__header-content__people p {
   font-weight: 500;

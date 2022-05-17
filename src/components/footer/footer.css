@@ -123,12 +123,13 @@
   }
   .gpt3__footer-links_logo p {
     width: 100%;
+    line-height: 2.5;
   }
 }
 @media (max-width: 545px) {
   .gpt3__footer-links {
-    align-items: center;
-    justify-content: center;
+    align-items: flex-start;
+    justify-content: space-between;
     text-align: center;
   }
 }
@@ -136,6 +137,16 @@
   .gpt3__footer-copyright p {
     font-size: 12px;
     line-height: 16px;
+  }
+  .gpt3__footer-links_logo p {
+    line-height: 1.5;
+  }
+}
+@media (max-width: 435px) {
+  .gpt3__footer-links {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
   }
 }
 @media (max-width: 430px) {

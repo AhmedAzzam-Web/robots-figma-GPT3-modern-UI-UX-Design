@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import people from "../../assets/people.webp";
+import people from "../../assets/people.png";
 import ai from "../../assets/ai.webp";
 import "./header.css";
 

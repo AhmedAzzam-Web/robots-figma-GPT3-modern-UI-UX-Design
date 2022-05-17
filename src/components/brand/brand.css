@@ -13,3 +13,12 @@
   align-items: center;
   justify-content: center;
 }
+.gpt3__brand .gpt3__brand-box img {
+  width: 100%;
+  object-fit: none;
+}
+@media (max-width: 500px) {
+  .gpt3__brand {
+    flex-direction: column;
+  }
+}
