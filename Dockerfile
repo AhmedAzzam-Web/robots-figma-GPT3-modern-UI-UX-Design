@@ -28,4 +28,5 @@ COPY . /app/
 EXPOSE 3000
 
 # command npm start becuase we are using create-react-app in package.json
-CMD ["npm", "start"]
+# command to serve the app for production environment
+CMD ["serve", "-s", "build"]
