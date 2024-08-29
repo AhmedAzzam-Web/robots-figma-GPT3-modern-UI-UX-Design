@@ -28,6 +28,9 @@ jobs:
     - run: npm ci
     - run: npm run build --if-present
 
+    - name: Build Docker Image
+      run: docker build -t ahmedazzamdev/robots-figma-gpt3:latest .
+
     # Add Grype vulnerability scan
     - name: Install Grype
       run: |
@@ -37,7 +40,7 @@ jobs:
       run: |
         /usr/local/bin/grype ahmedazzamdev/robots-figma-gpt3:latest
 
-    - name: Build & Push docker image
+    - name: Push docker image to docker hub
       uses: mr-smithers-excellent/docker-build-push@v6
       with:
         image: ahmedazzamdev/robots-figma-gpt3
