@@ -31,11 +31,11 @@ jobs:
     # Add Grype vulnerability scan
     - name: Install Grype
       run: |
-        curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh
+        curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
 
     - name: Scan Docker Image for Vulnerabilities with Grype
       run: |
-        grype ahmedazzamdev/robots-figma-gpt3:latest
+        /usr/local/bin/grype ahmedazzamdev/robots-figma-gpt3:latest
 
     - name: Build & Push docker image
       uses: mr-smithers-excellent/docker-build-push@v6
