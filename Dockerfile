@@ -1,5 +1,5 @@
 # Stage 1: Build the app
-FROM cgr.dev/chainguard/node:latest AS build
+FROM node:22-alpine3.20 AS build
 
 WORKDIR /app
 COPY package*.json ./
@@ -8,7 +8,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Serve the app
-FROM cgr.dev/chainguard/node:latest
+FROM node:22-alpine3.20 as build
 
 WORKDIR /app
 # Copy the build output from the first stage
