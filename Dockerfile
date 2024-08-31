@@ -11,10 +11,7 @@ RUN npm run build
 FROM node:22-alpine3.20 as build
 
 WORKDIR /app
-# Copy the build output from the first stage
-COPY --from=build /app/node_modules /app/node_modules
-COPY --from=build /app/package*.json ./
-
+# Copy only the build output from the first stage
 COPY --from=build /app/build /app/build
 
 RUN npm install -g serve
