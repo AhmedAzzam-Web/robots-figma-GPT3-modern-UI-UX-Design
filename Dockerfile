@@ -1,22 +1,25 @@
 # Stage 1: Build the app
-FROM node:22-alpine3.20 as build
+FROM cgr.dev/chainguard/node:22-alpine3.20 AS build
 
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm ci --only=production
 COPY . .
 RUN npm run build
 
 # Stage 2: Serve the app
-FROM node:22-alpine3.20
+FROM cgr.dev/chainguard/node:latest
 
 WORKDIR /app
+# Copy the build output from the first stage
+COPY --from=build /app/node_modules /app/node_modules
+COPY --from=build /app/package*.json ./
+
 COPY --from=build /app/build /app/build
 
-# Install only production dependencies
-COPY package*.json ./
-RUN npm install --production
 RUN npm install -g serve
 
+USER 1001
+
 EXPOSE 3000
-CMD ["serve", "-s", "build"]
+ENTRYPOINT ["serve", "-s", "build"]
