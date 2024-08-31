@@ -1,5 +1,5 @@
 # Stage 1: Build the app
-FROM cgr.dev/chainguard/node:22-alpine3.20 AS build
+FROM cgr.dev/chainguard/node:latest AS build
 
 WORKDIR /app
 COPY package*.json ./
