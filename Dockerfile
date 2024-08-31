@@ -15,8 +15,7 @@ COPY --from=build /app/build /app/build
 
 # Install only production dependencies
 COPY package*.json ./
-RUN npm install --production
-RUN npm install -g serve
+RUN npm install --production && npm install -g serve
 
 USER 1001
 
