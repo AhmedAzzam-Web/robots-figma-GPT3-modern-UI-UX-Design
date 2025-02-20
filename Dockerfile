@@ -17,6 +17,9 @@ COPY --from=build /app/build /app/build
 COPY package*.json ./
 RUN npm install --production && npm install -g serve
 
+# Ensure non-root user has correct permissions
+RUN chown -R 1001:1001 /app/build
+
 USER 1001
 
 EXPOSE 3000
