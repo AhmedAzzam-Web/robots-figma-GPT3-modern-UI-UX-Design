@@ -1,0 +1,12 @@
+services:
+  robots-figma:
+    build:
+      target: prod
+    image: robots-figma:prod
+    environment:
+      - NODE_ENV=production
+    command: ["serve", "-s", "build"]
+    ports:
+      - "3000:3000"
+    # No volumes in production for a clean, read-only container
+    volumes: []

@@ -1,0 +1,10 @@
+services:
+  robots-figma:
+    build:
+      target: dev
+    environment:
+      - NODE_ENV=development
+    command: ["npm", "start"]
+    volumes:
+      - .:/app
+      - /app/node_modules
