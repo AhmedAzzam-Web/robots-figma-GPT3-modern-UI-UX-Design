@@ -10,5 +10,5 @@ services:
       - NODE_ENV=development
       - NODE_OPTIONS=--openssl-legacy-provider
     volumes:
-      - .:/app
-      - /app/node_modules
+      - .:/app # Bind Mount the current directory to /app in the container
+      - /app/node_modules # Avoids conflicts with host's node_modules
