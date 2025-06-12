@@ -6,7 +6,6 @@ FROM node:22-alpine3.20 AS dev
 WORKDIR /app
 ENV NODE_ENV=development
 
-RUN apk add --no-cache curl vim
 COPY package*.json ./
 RUN npm install
 COPY . .
@@ -23,11 +22,15 @@ ENV NODE_ENV=production
 ENV NODE_OPTIONS=--openssl-legacy-provider
 
 COPY package*.json ./
+RUN npm ci --only=production
 COPY . .
+<<<<<<< HEAD
 
 # Only production deps + serve
 RUN npm ci --omit=dev
 
+=======
+>>>>>>> db7996fabbce55559283bef6e1c1befeb833f43c
 # Build static React files
 RUN npm run build
 
