@@ -1,6 +1,6 @@
 import React from "react";
 import "./footer.css";
-import gpt3Logo from "../../assets/logo.svg";
+import gpt3Logo from "../../assets/logo.png";
 import FooterLinks from "./footerLinks/FooterLinks";
 import { AiFillLinkedin } from "react-icons/ai";
 import { AiFillGithub } from "react-icons/ai";
