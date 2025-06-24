@@ -38,12 +38,12 @@ jobs:
 
     - name: Scan Docker Image for Vulnerabilities with Grype
       run: |
-        /usr/local/bin/grype ahmedazzamdev/robots-figma-gpt3:latest
+        /usr/local/bin/grype ahmedazzamdev/robots-figma:prod
 
     - name: Push docker image to docker hub
       uses: mr-smithers-excellent/docker-build-push@v6
       with:
-        image: ahmedazzamdev/robots-figma-gpt3
+        image: ahmedazzamdev/robots-figma
         registry: docker.io
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
