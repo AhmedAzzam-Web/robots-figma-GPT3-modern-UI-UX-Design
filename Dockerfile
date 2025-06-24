@@ -18,15 +18,10 @@ CMD ["npm", "run", "dev"]
 FROM node:22-alpine3.20 AS build
 
 WORKDIR /app
-ENV NODE_ENV=production
 ENV NODE_OPTIONS=--openssl-legacy-provider
-
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm ci
 COPY . .
-# Only production deps + serve
-RUN npm ci --omit=dev
-
 RUN npm run build
 
 # -----------------------
@@ -37,7 +32,7 @@ FROM node:22-slim AS prod
 WORKDIR /app
 ENV NODE_ENV=production
 
-RUN npm install -g serve
+RUN npm install -g serve && npm cache clean --force
 COPY --from=build /app/build ./build
 
 EXPOSE 3000
