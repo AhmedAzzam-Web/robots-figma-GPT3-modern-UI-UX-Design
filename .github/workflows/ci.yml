@@ -1,0 +1,71 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: CI - Build & Push Dev + Prod Docker Images
+
+on:
+  push:
+    branches: [ "master" ]
+    tags: [ "v*" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  docker-build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Get Git SHA
+      id: vars
+      run: echo "GIT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    # -----------------------
+    # Build & Push Dev Image
+    # -----------------------
+    - name: Build Dev Image
+      run: |
+        docker build --target dev -t ahmedazzamdev/robots-figma:dev .
+        docker tag ahmedazzamdev/robots-figma:dev ahmedazzamdev/robots-figma:dev-${{ env.GIT_SHA }}
+    
+    - name: Push Dev Images
+      run: |
+        docker push ahmedazzamdev/robots-figma:dev
+        docker push ahmedazzamdev/robots-figma:dev-${{ env.GIT_SHA }}
+
+
+    # -----------------------
+    # Security Scan for prod image (Grype)
+    # -----------------------
+    - name: Install Grype
+      run: |
+        curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
+
+    - name: Scan Prod Image for Vulnerabilities
+      run: |
+        /usr/local/bin/grype ahmedazzamdev/robots-figma:prod --fail-on medium
+
+
+    # -----------------------
+    # Build & Push Prod Image
+    # -----------------------
+    - name: Build Prod Image
+      run: |
+        docker build --target prod -t ahmedazzamdev/robots-figma:prod .
+        docker tag ahmedazzamdev/robots-figma:prod ahmedazzamdev/robots-figma:latest
+        docker tag ahmedazzamdev/robots-figma:prod ahmedazzamdev/robots-figma:prod-${{ env.GIT_SHA }}
+    - name: Push Prod Images
+      run: |
+        docker push ahmedazzamdev/robots-figma:prod
+        docker push ahmedazzamdev/robots-figma:prod-${{ env.GIT_SHA }}
+        docker push ahmedazzamdev/robots-figma:latest
