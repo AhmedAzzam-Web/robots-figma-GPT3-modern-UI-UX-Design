@@ -26,9 +26,10 @@ RUN npm run build
 # -----------------------
 # Stage 3: Production
 # -----------------------
-FROM gcr.io/distroless/nodejs22-debian12
+FROM gcr.io/distroless/nodejs22-debian12 AS prod
 
 WORKDIR /app
+ENV NODE_ENV=production
 
 COPY --from=build /app/build ./build
 COPY ./server.js ./

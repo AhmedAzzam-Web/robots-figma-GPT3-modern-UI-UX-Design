@@ -1,22 +1,34 @@
 import http from "http";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 
-const serveDir = path.resolve("build");
+// Fix __dirname for ES module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Define the static directory path explicitly
+const serveDir = path.join(__dirname, "build");
 
 const server = http.createServer((req, res) => {
-  let filePath = path.join(serveDir, req.url === "/" ? "/index.html" : req.url);
-  if (!fs.existsSync(filePath)) {
-    filePath = path.join(serveDir, "index.html");
-  }
-  fs.readFile(filePath, (err, content) => {
-    if (err) {
-      res.writeHead(500);
-      res.end("Server error");
-    } else {
-      res.writeHead(200);
-      res.end(content);
+  let reqPath = req.url.split("?")[0]; // Remove query params
+  let filePath = path.join(serveDir, reqPath === "/" ? "index.html" : reqPath);
+
+  fs.stat(filePath, (err, stats) => {
+    if (err || !stats.isFile()) {
+      filePath = path.join(serveDir, "index.html"); // fallback for SPA routing
     }
+
+    fs.readFile(filePath, (err, content) => {
+      if (err) {
+        console.error("Failed to read:", filePath, err);
+        res.writeHead(500);
+        res.end("Server error");
+      } else {
+        res.writeHead(200);
+        res.end(content);
+      }
+    });
   });
 });
 

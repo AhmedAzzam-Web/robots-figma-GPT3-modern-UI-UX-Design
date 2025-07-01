@@ -2,6 +2,7 @@ services:
   robots-figma:
     build:
       target: dev
+    image: robots-figma:dev
     environment:
       - NODE_ENV=development
     command: ["npm", "start"]
