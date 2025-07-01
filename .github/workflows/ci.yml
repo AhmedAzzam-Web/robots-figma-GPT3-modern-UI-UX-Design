@@ -43,7 +43,15 @@ jobs:
         docker push ahmedazzamdev/robots-figma:dev
         docker push ahmedazzamdev/robots-figma:dev-${{ env.GIT_SHA }}
 
-
+    # -----------------------
+    # Build Prod Image
+    # -----------------------
+    - name: Build Prod Image
+      run: |
+        docker build --target prod -t ahmedazzamdev/robots-figma:prod .
+        docker tag ahmedazzamdev/robots-figma:prod ahmedazzamdev/robots-figma:latest
+        docker tag ahmedazzamdev/robots-figma:prod ahmedazzamdev/robots-figma:prod-${{ env.GIT_SHA }}
+    
     # -----------------------
     # Security Scan for prod image (Grype)
     # -----------------------
@@ -55,15 +63,9 @@ jobs:
       run: |
         /usr/local/bin/grype ahmedazzamdev/robots-figma:prod --fail-on medium
 
-
     # -----------------------
-    # Build & Push Prod Image
-    # -----------------------
-    - name: Build Prod Image
-      run: |
-        docker build --target prod -t ahmedazzamdev/robots-figma:prod .
-        docker tag ahmedazzamdev/robots-figma:prod ahmedazzamdev/robots-figma:latest
-        docker tag ahmedazzamdev/robots-figma:prod ahmedazzamdev/robots-figma:prod-${{ env.GIT_SHA }}
+    # Push Prod Image
+    # -----------------------    
     - name: Push Prod Images
       run: |
         docker push ahmedazzamdev/robots-figma:prod
