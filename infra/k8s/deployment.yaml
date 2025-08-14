@@ -1,0 +1,47 @@
+# Deployment for the SPA server container. Includes liveness/readiness probes.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: robots-figma
+  namespace: robots-figma
+  labels:
+    app.kubernetes.io/name: robots-figma
+spec:
+  replicas: 1 # SPA is stateless; scale to >1 if needed
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: robots-figma
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: robots-figma
+    spec:
+      containers:
+        - name: web
+          # Image reference will be set by CI-CD to ACR with tag
+          image: REPLACE_WITH_ACR/robots-figma:REPLACE_WITH_TAG
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: "production"
+          # Health checks ensure the server is up and responding on /
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 20
+            timeoutSeconds: 2
+            failureThreshold: 3
+
+

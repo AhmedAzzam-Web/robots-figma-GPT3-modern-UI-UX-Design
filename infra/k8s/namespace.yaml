@@ -1,0 +1,10 @@
+# Kubernetes namespace for logical isolation of the app resources
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: robots-figma
+  labels:
+    app.kubernetes.io/name: robots-figma
+    app.kubernetes.io/part-of: robots-figma
+
+

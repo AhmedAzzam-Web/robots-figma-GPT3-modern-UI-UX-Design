@@ -1,0 +1,18 @@
+# Service exposing the web app via a cloud load balancer
+apiVersion: v1
+kind: Service
+metadata:
+  name: robots-figma
+  namespace: robots-figma
+  labels:
+    app.kubernetes.io/name: robots-figma
+spec:
+  type: LoadBalancer
+  selector:
+    app.kubernetes.io/name: robots-figma
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000
+
+
