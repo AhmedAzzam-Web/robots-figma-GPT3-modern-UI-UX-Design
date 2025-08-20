@@ -6,6 +6,11 @@ on:
     tags:
       - "v*.*"
 
+# Add permissions for OIDC authentication
+permissions:
+  id-token: write
+  contents: read
+
 env:
   PROJECT_NAME: robots-figma
   AZURE_LOCATION: eastus
@@ -13,135 +18,117 @@ env:
   K8S_DIR: infra/k8s
 
 jobs:
+  infra:
+    name: Provision Infra with Terraform
+    runs-on: ubuntu-latest
+    # Define job outputs to be used by other jobs
+    outputs:
+      acr_login_server: ${{ steps.tf_outputs.outputs.acr_login_server }}
+      aks_cluster_name: ${{ steps.tf_outputs.outputs.aks_cluster_name }}
+      resource_group_name: ${{ steps.tf_outputs.outputs.resource_group_name }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure Login using OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init -input=false
+        working-directory: ${{ env.TF_WORKING_DIR }}
+
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: ${{ env.TF_WORKING_DIR }}
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan -input=false
+        working-directory: ${{ env.TF_WORKING_DIR }}
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        
+      - name: Export Terraform outputs as job outputs
+        id: tf_outputs
+        run: |
+          echo "acr_login_server=$(terraform output -raw acr_login_server)" >> $GITHUB_OUTPUT
+          echo "aks_cluster_name=$(terraform output -raw aks_cluster_name)" >> $GITHUB_OUTPUT
+          echo "resource_group_name=$(terraform output -raw aks_resource_group_name)" >> $GITHUB_OUTPUT
+        working-directory: ${{ env.TF_WORKING_DIR }}
+
   build_push:
     name: Build and Push Image to ACR
     runs-on: ubuntu-latest
-    env:
-      # Pass Azure ARM_* env vars for Terraform AzureRM provider auth
-      ARM_CLIENT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientId }}
-      ARM_CLIENT_SECRET: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientSecret }}
-      ARM_TENANT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).tenantId }}
-      ARM_SUBSCRIPTION_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).subscriptionId }}
-    permissions:
-      contents: read
+    needs: infra # Depends on the infra job
+    outputs:
+      image_tag: ${{ steps.build.outputs.image }} # Output the final image tag
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_wrapper: false
-
-      # Extract tag value
-      - name: Get version
+      - name: Get version from git tag
         id: vars
         run: echo "version=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
 
-      # Setup Azure login (using federated credentials or AZURE_CREDENTIALS secret)
-      - name: Azure Login
+      - name: Azure Login using OIDC
         uses: azure/login@v2
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      # Ensure terraform outputs exist (ACR info). We run 'terraform output' later as well.
-      - name: Terraform Init
-        working-directory: ${{ env.TF_WORKING_DIR }}
-        run: terraform init -input=false
+      # Use the standard Docker action for logging into a container registry
+      - name: Docker Login to ACR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ needs.infra.outputs.acr_login_server }}
+          username: ${{ secrets.AZURE_CLIENT_ID }}
+          password: ${{ secrets.AZURE_CLIENT_SECRET }} # Or use `az acr login` with managed identity
 
-      - name: Terraform Apply (Provision infra)
-        working-directory: ${{ env.TF_WORKING_DIR }}
-        run: terraform apply -auto-approve -input=false
-
-      - name: Get ACR Login Server
-        id: tf
-        working-directory: ${{ env.TF_WORKING_DIR }}
+      - name: Build and Push Docker image
+        id: build
         run: |
-          echo "acr=$(terraform output -raw acr_login_server)" >> $GITHUB_OUTPUT
-
-      - name: Azure CLI - ACR Login
-        run: az acr login --name $(echo '${{ steps.tf.outputs.acr }}' | cut -d'.' -f1)
-
-      - name: Build and Push
-        run: |
-          IMAGE=${{ steps.tf.outputs.acr }}/${{ env.PROJECT_NAME }}:${{ steps.vars.outputs.version }}
+          IMAGE="${{ needs.infra.outputs.acr_login_server }}/${{ env.PROJECT_NAME }}:${{ steps.vars.outputs.version }}"
           docker build -t $IMAGE -f Dockerfile .
           docker push $IMAGE
-
-      - name: Write image ref file
-        run: |
-          echo "${{ steps.tf.outputs.acr }}/${{ env.PROJECT_NAME }}:${{ steps.vars.outputs.version }}" > image.txt
-
-      - name: Upload image ref
-        uses: actions/upload-artifact@v4
-        with:
-          name: image-ref
-          path: image.txt
+          echo "image=$IMAGE" >> $GITHUB_OUTPUT
 
   deploy:
-    name: Apply Terraform and Deploy to AKS
-    needs: build_push
+    name: Deploy to AKS
     runs-on: ubuntu-latest
-    env:
-      # Pass Azure ARM_* env vars for Terraform AzureRM provider auth
-      ARM_CLIENT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientId }}
-      ARM_CLIENT_SECRET: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientSecret }}
-      ARM_TENANT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).tenantId }}
-      ARM_SUBSCRIPTION_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).subscriptionId }}
+    needs: [infra, build_push] # Depends on both previous jobs
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_wrapper: false
-
-      - name: Download image ref
-        uses: actions/download-artifact@v4
-        with:
-          name: image-ref
-
-      - name: Read image ref
-        id: img
-        run: echo "image=$(cat image.txt)" >> $GITHUB_OUTPUT
-
-      - name: Azure Login
+      - name: Azure Login using OIDC
         uses: azure/login@v2
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Terraform Init
-        working-directory: infra/terraform
-        run: terraform init -input=false
+      - name: Set AKS context
+        uses: azure/aks-set-context@v4
+        with:
+          resource-group: ${{ needs.infra.outputs.resource_group_name }}
+          cluster-name: ${{ needs.infra.outputs.aks_cluster_name }}
+      
+      - name: Setup Kustomize
+        uses: imranismail/setup-kustomize@v2
 
-      - name: Terraform Apply (ensure infra)
-        working-directory: infra/terraform
-        run: terraform apply -auto-approve -input=false
-
-      - name: Get kubeconfig
-        id: tf
-        working-directory: infra/terraform
+      - name: Update Kubernetes manifests with new image tag
         run: |
-          echo "kubeconfig<<EOF" >> $GITHUB_OUTPUT
-          terraform output -raw aks_kube_config >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
-      - name: Setup kubectl
-        uses: azure/setup-kubectl@v4
-
-      - name: Configure kubeconfig
-        run: |
-          mkdir -p ~/.kube
-          echo "${{ steps.tf.outputs.kubeconfig }}" > ~/.kube/config
-
-      - name: Render manifests with image
-        run: |
-          ACR_HOST=$(echo ${{ steps.img.outputs.image }} | cut -d'/' -f1)
-          TAG=$(echo ${{ steps.img.outputs.image }} | cut -d':' -f2)
-          sed -i "s#REPLACE_WITH_ACR#$ACR_HOST#g" infra/k8s/deployment.yaml
-          sed -i "s#REPLACE_WITH_TAG#$TAG#g" infra/k8s/deployment.yaml
-
-      - name: Apply manifests
-        run: |
-          kubectl apply -f infra/k8s/namespace.yaml
-          kubectl apply -f infra/k8s/deployment.yaml
-          kubectl apply -f infra/k8s/service.yaml
+          cd ${{ env.K8S_DIR }}
+          kustomize edit set image aplication-image=${{ needs.build_push.outputs.image_tag }}
+      
+      - name: Deploy to Kubernetes
+        run: kubectl apply -k ${{ env.K8S_DIR }}
