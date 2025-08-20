@@ -13,63 +13,93 @@ env:
   K8S_DIR: infra/k8s
 
 jobs:
-  build_push:
-    name: Build and Push Image to ACR
+  infra:
+    name: Provision Infra with Terraform
     runs-on: ubuntu-latest
     env:
-      # Pass Azure ARM_* env vars for Terraform AzureRM provider auth
       ARM_CLIENT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientId }}
       ARM_CLIENT_SECRET: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientSecret }}
       ARM_TENANT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).tenantId }}
       ARM_SUBSCRIPTION_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).subscriptionId }}
-    permissions:
-      contents: read
     steps:
       - uses: actions/checkout@v4
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_wrapper: false
 
-      # Extract tag value
-      - name: Get version
-        id: vars
-        run: echo "version=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
-
-      # Setup Azure login (using federated credentials or AZURE_CREDENTIALS secret)
       - name: Azure Login
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # Ensure terraform outputs exist (ACR info). We run 'terraform output' later as well.
       - name: Terraform Init
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform init -input=false
 
-      - name: Terraform Apply (Provision infra)
+      - name: Terraform Plan
         working-directory: ${{ env.TF_WORKING_DIR }}
-        run: terraform apply -auto-approve -input=false
+        run: terraform plan -out=tfplan
 
-      - name: Get ACR Login Server
+      - name: Terraform Apply
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform apply -auto-approve tfplan
+
+      - name: Export outputs
         id: tf
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
           echo "acr=$(terraform output -raw acr_login_server)" >> $GITHUB_OUTPUT
+          echo "kubeconfig<<EOF" >> $GITHUB_OUTPUT
+          terraform output -raw aks_kube_config >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Upload infra outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: infra-outputs
+          path: ${{ env.TF_WORKING_DIR }}/terraform.tfstate
+
+  build_push:
+    name: Build and Push Image to ACR
+    needs: infra
+    runs-on: ubuntu-latest
+    env:
+      ARM_CLIENT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientId }}
+      ARM_CLIENT_SECRET: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientSecret }}
+      ARM_TENANT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).tenantId }}
+      ARM_SUBSCRIPTION_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).subscriptionId }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get version
+        id: vars
+        run: echo "version=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+
+      - name: Download infra outputs
+        uses: actions/download-artifact@v4
+        with:
+          name: infra-outputs
+          path: infra/terraform
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Get ACR from Terraform state
+        id: acr
+        run: echo "acr=$(terraform -chdir=infra/terraform output -raw acr_login_server)" >> $GITHUB_OUTPUT
 
       - name: Azure CLI - ACR Login
-        run: az acr login --name $(echo '${{ steps.tf.outputs.acr }}' | cut -d'.' -f1)
+        run: az acr login --name $(echo '${{ steps.acr.outputs.acr }}' | cut -d'.' -f1)
 
       - name: Build and Push
         run: |
-          IMAGE=${{ steps.tf.outputs.acr }}/${{ env.PROJECT_NAME }}:${{ steps.vars.outputs.version }}
+          IMAGE=${{ steps.acr.outputs.acr }}/${{ env.PROJECT_NAME }}:${{ steps.vars.outputs.version }}
           docker build -t $IMAGE -f Dockerfile .
           docker push $IMAGE
-
-      - name: Write image ref file
-        run: |
-          echo "${{ steps.tf.outputs.acr }}/${{ env.PROJECT_NAME }}:${{ steps.vars.outputs.version }}" > image.txt
+          echo "image=$IMAGE" >> $GITHUB_OUTPUT
 
       - name: Upload image ref
         uses: actions/upload-artifact@v4
@@ -78,27 +108,22 @@ jobs:
           path: image.txt
 
   deploy:
-    name: Apply Terraform and Deploy to AKS
-    needs: build_push
+    name: Deploy to AKS
+    needs: [infra, build_push]
     runs-on: ubuntu-latest
-    env:
-      # Pass Azure ARM_* env vars for Terraform AzureRM provider auth
-      ARM_CLIENT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientId }}
-      ARM_CLIENT_SECRET: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientSecret }}
-      ARM_TENANT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).tenantId }}
-      ARM_SUBSCRIPTION_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).subscriptionId }}
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_wrapper: false
 
       - name: Download image ref
         uses: actions/download-artifact@v4
         with:
           name: image-ref
+
+      - name: Download infra outputs
+        uses: actions/download-artifact@v4
+        with:
+          name: infra-outputs
+          path: infra/terraform
 
       - name: Read image ref
         id: img
@@ -109,29 +134,13 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Terraform Init
-        working-directory: infra/terraform
-        run: terraform init -input=false
-
-      - name: Terraform Apply (ensure infra)
-        working-directory: infra/terraform
-        run: terraform apply -auto-approve -input=false
-
-      - name: Get kubeconfig
-        id: tf
-        working-directory: infra/terraform
-        run: |
-          echo "kubeconfig<<EOF" >> $GITHUB_OUTPUT
-          terraform output -raw aks_kube_config >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
       - name: Setup kubectl
         uses: azure/setup-kubectl@v4
 
       - name: Configure kubeconfig
         run: |
           mkdir -p ~/.kube
-          echo "${{ steps.tf.outputs.kubeconfig }}" > ~/.kube/config
+          terraform -chdir=infra/terraform output -raw aks_kube_config > ~/.kube/config
 
       - name: Render manifests with image
         run: |
