@@ -13,7 +13,7 @@ permissions:
 
 env:
   PROJECT_NAME: robots-figma
-  AZURE_LOCATION: eastus
+  AZURE_LOCATION: uaenorth
   TF_WORKING_DIR: infra/terraform
   K8S_DIR: infra/k8s
 
@@ -52,10 +52,18 @@ jobs:
       - name: Terraform Plan
         run: terraform plan -out=tfplan -input=false
         working-directory: ${{ env.TF_WORKING_DIR }}
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
         working-directory: ${{ env.TF_WORKING_DIR }}
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Export Terraform outputs as job outputs
         id: tf_outputs
