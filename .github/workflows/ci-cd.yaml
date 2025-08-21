@@ -70,7 +70,7 @@ jobs:
         run: |
           echo "acr_login_server=$(terraform output -raw acr_login_server)" >> $GITHUB_OUTPUT
           echo "aks_cluster_name=$(terraform output -raw aks_cluster_name)" >> $GITHUB_OUTPUT
-          echo "resource_group_name=$(terraform output -raw aks_resource_group_name)" >> $GITHUB_OUTPUT
+          echo "resource_group_name=$(terraform output -raw resource_group_name)" >> $GITHUB_OUTPUT
         working-directory: ${{ env.TF_WORKING_DIR }}
 
   build_push:
@@ -95,10 +95,10 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       # Use the standard Docker action for logging into a container registry
-      - name: Azure Container Registry Login
-        uses: azure/docker-login@v2
-        with:
-          login-server: ${{ needs.infra.outputs.acr_login_server }}
+      - name: Login to ACR via Azure CLI
+        run: |
+          az acr login --name ${{ needs.infra.outputs.acr_name }}
+
       - name: Build and Push Docker image
         id: build
         run: |
