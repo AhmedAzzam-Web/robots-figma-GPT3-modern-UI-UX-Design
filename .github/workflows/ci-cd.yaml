@@ -132,10 +132,11 @@ jobs:
       - name: Setup Kustomize
         uses: imranismail/setup-kustomize@v2
 
+        # update deployment.yaml with the new image tag the part image reference is REPLACE_WITH_ACR/robots-figma:REPLACE_WITH_TAG
       - name: Update Kubernetes manifests with new image tag
         run: |
           cd ${{ env.K8S_DIR }}
-          kustomize edit set image application-image=${{ needs.build_push.outputs.image_tag }}
+          kustomize edit set image REPLACE_WITH_ACR/robots-figma=${{ needs.build_push.outputs.image_tag }}
 
       - name: Deploy to Kubernetes
         run: kubectl apply -k ${{ env.K8S_DIR }}

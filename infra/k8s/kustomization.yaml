@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# The order matters for dependencies Namespace should be first.
+resources:
+  - namespace.yaml
+  - deployment.yaml
+  - service.yaml
+
+# Defines a list of container images to be modified.
+# This is the key section that your CI/CD pipeline will interact with.
+images:
+  # The 'name' must EXACTLY match the image path used in your deployment.yaml,
+  # without the tag. This is how Kustomize finds the image to update.
+  - name: REPLACE_WITH_ACR/robots-figma
+
+    # The 'newTag' is a placeholder. Your pipeline will dynamically
+    # overwrite this value with the new version tag (e.g., "v1.2.3").
+    newTag: REPLACE_WITH_TAG
