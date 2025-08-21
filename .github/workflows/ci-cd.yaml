@@ -95,9 +95,10 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       # Use the standard Docker action for logging into a container registry
-      - name: Login to ACR via Azure CLI
+      - name: Login to ACR
         run: |
-          az acr login --name ${{ needs.infra.outputs.acr_name }}
+          ACR_NAME=$(echo ${{ needs.infra.outputs.acr_login_server }} | cut -d'.' -f1)
+          az acr login --name $ACR_NAME
 
       - name: Build and Push Docker image
         id: build
